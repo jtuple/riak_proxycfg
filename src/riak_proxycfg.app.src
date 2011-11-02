@@ -1,0 +1,13 @@
+{application, riak_proxycfg,
+ [
+  {description, ""},
+  {vsn, "0.0.1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  lager
+                 ]},
+  {mod, { riak_proxycfg_app, []}},
+  {env, []}
+ ]}.

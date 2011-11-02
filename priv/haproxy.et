@@ -1,0 +1,35 @@
+global
+         user haproxy
+         group haproxy
+         daemon
+         maxconn 100000
+
+defaults
+         log     global
+         mode    tcp
+         option  tcplog
+         option  dontlognull
+         balance leastconn
+         clitimeout      60000
+         srvtimeout      60000
+         contimeout      5000
+         retries  3
+         option  redispatch
+         option contstats
+         stats enable
+
+# Protocol Buffers
+listen riak_pb 127.0.0.1:9087
+         option tcpka
+<% [pb_server(NodeInfo) || NodeInfo <- Data] %>
+
+# HTTP
+listen riak_http 127.0.0.1:9098
+         mode   http
+         option httpchk
+<% [http_server(NodeInfo) || NodeInfo <- Data] %>
+
+<%@ pb_server({Name, {http, HttpIP, HttpPort}, {pb, PB_IP, PB_Port}}) %>
+         server <% Name %> <% PB_IP %>:<% PB_Port %> weight 1 maxconn 1000
+<%@ http_server({Name, {http, HttpIP, HttpPort}, {pb, PB_IP, PB_Port}}) %>
+         server <% Name %> <% HttpIP %>:<% HttpPort %> weight 1 maxconn 1000
